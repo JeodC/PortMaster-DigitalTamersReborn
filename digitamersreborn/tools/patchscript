@@ -35,6 +35,28 @@ initial_setup() {
     sleep 1
 }
 
+unzip_patch() {
+    echo "Unzipping the patch file..."
+    if [ -f "./tools/patches/dtr.zip.001" ]; then
+        if [ -x "$(command -v 7z)" ]; then
+            ./tools/7za x ./tools/patches/dtr.zip.001 -o./tools/patches
+            if [ $? -eq 0 ]; then
+                echo "Patch file successfully extracted."
+                rm ./tools/patches/dtr.zip.*
+            else
+                echo "Failed to extract multi-part archive."
+                exit 1
+            fi
+        else
+            echo "7za tool is not available. Failed to extract xdelta patch."
+            exit 1
+        fi
+    else
+        echo "Patch archive not found!"
+        exit 1
+    fi
+}
+
 apply_xdelta() {
     echo "Applying xdelta patch"
     # Check if the data.win file exists and apply xdelta
@@ -101,8 +123,9 @@ zip_archive() {
 
 process_game() {
     initial_setup
+    unzip_patch
     apply_xdelta
-    #compress_audio
+    compress_audio
     zip_archive
 	
     # Final completion message
