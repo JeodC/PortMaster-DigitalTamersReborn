@@ -18,6 +18,10 @@ get_controls
 
 # Variables
 GAMEDIR="/$directory/ports/digitamersreborn"
+BIG_SCALE=4000
+BIG_DELAY=8
+SMALL_SCALE=6000
+SMALL_DELAY=16
 
 # CD and set permissions
 cd $GAMEDIR
@@ -51,6 +55,15 @@ fi
 export PORT_32BIT="Y"
 [ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"
 export LD_LIBRARY_PATH="/usr/lib32:$GAMEDIR/lib:$LD_LIBRARY_PATH"
+
+# Apply mouse scaling according to screen size
+if [ $DISPLAY_WIDTH -gt 480 ]; then
+    sed -i "s/^mouse_scale *= *[0-9]\+/mouse_scale = $BIG_SCALE/" "$GAMEDIR/dtr.gptk"
+    sed -i "s/^mouse_delay *= *[0-9]\+/mouse_delay = $BIG_DELAY/" "$GAMEDIR/dtr.gptk"
+else
+    sed -i "s/^mouse_scale *= *[0-9]\+/mouse_scale = $SMALL_SCALE/" "$GAMEDIR/dtr.gptk"
+    sed -i "s/^mouse_delay *= *[0-9]\+/mouse_delay = $SMALL_DELAY/" "$GAMEDIR/dtr.gptk"
+fi
 
 # Display loading splash
 if [ -f "$GAMEDIR/patchlog.txt" ]; then
